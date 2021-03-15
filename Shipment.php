@@ -23,7 +23,7 @@ namespace Mageplaza\ExtraFee\Model\Sales\Order\Pdf;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Filesystem;
-use Magento\Framework\Locale\ResolverInterface;
+use Magento\Store\Model\App\Emulation;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Translate\Inline\StateInterface;
@@ -68,7 +68,7 @@ class Shipment extends \Magento\Sales\Model\Order\Pdf\Shipment
      * @param StateInterface $inlineTranslation
      * @param Renderer $addressRenderer
      * @param StoreManagerInterface $storeManager
-     * @param ResolverInterface $localeResolver
+     * @param Emulation $localeResolver
      * @param Data $helper
      * @param array $data
      */
@@ -84,7 +84,7 @@ class Shipment extends \Magento\Sales\Model\Order\Pdf\Shipment
         StateInterface $inlineTranslation,
         Renderer $addressRenderer,
         StoreManagerInterface $storeManager,
-        ResolverInterface $localeResolver,
+        Emulation $localeResolver,
         Data $helper,
         array $data = []
     ) {

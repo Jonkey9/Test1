@@ -1,7 +1,9 @@
-diff --git a/Invoice.php b/Invoice.php
-index 180817d..2faa13e 100755
---- a/Invoice.php
-+++ b/Invoice.php
+diff --git a/Shipment.php b/Shipment.php
+old mode 100644
+new mode 100755
+index 8c49927..5f35f98
+--- a/Shipment.php
++++ b/Shipment.php
 @@ -23,7 +23,7 @@ namespace Mageplaza\ExtraFee\Model\Sales\Order\Pdf;
  
  use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -11,7 +13,7 @@ index 180817d..2faa13e 100755
  use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
  use Magento\Framework\Stdlib\StringUtils;
  use Magento\Framework\Translate\Inline\StateInterface;
-@@ -68,7 +68,7 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
+@@ -68,7 +68,7 @@ class Shipment extends \Magento\Sales\Model\Order\Pdf\Shipment
       * @param StateInterface $inlineTranslation
       * @param Renderer $addressRenderer
       * @param StoreManagerInterface $storeManager
@@ -19,8 +21,8 @@ index 180817d..2faa13e 100755
 +     * @param Emulation $localeResolver
       * @param Data $helper
       * @param array $data
-      *
-@@ -86,7 +86,7 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
+      */
+@@ -84,7 +84,7 @@ class Shipment extends \Magento\Sales\Model\Order\Pdf\Shipment
          StateInterface $inlineTranslation,
          Renderer $addressRenderer,
          StoreManagerInterface $storeManager,
