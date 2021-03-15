@@ -1,9 +1,7 @@
-diff --git a/Shipment.php b/Shipment.php
-old mode 100644
-new mode 100755
-index 8c49927..5f35f98
---- a/Shipment.php
-+++ b/Shipment.php
+diff --git a/Creditmemo.php b/Creditmemo.php
+index 2533e8d..6a08d54 100755
+--- a/Creditmemo.php
++++ b/Creditmemo.php
 @@ -23,7 +23,7 @@ namespace Mageplaza\ExtraFee\Model\Sales\Order\Pdf;
  
  use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -13,7 +11,7 @@ index 8c49927..5f35f98
  use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
  use Magento\Framework\Stdlib\StringUtils;
  use Magento\Framework\Translate\Inline\StateInterface;
-@@ -68,7 +68,7 @@ class Shipment extends \Magento\Sales\Model\Order\Pdf\Shipment
+@@ -72,7 +72,7 @@ class Creditmemo extends \Magento\Sales\Model\Order\Pdf\Creditmemo
       * @param StateInterface $inlineTranslation
       * @param Renderer $addressRenderer
       * @param StoreManagerInterface $storeManager
@@ -22,7 +20,7 @@ index 8c49927..5f35f98
       * @param Data $helper
       * @param array $data
       */
-@@ -84,7 +84,7 @@ class Shipment extends \Magento\Sales\Model\Order\Pdf\Shipment
+@@ -88,7 +88,7 @@ class Creditmemo extends \Magento\Sales\Model\Order\Pdf\Creditmemo
          StateInterface $inlineTranslation,
          Renderer $addressRenderer,
          StoreManagerInterface $storeManager,

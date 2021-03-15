@@ -23,7 +23,7 @@ namespace Mageplaza\ExtraFee\Model\Sales\Order\Pdf;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Filesystem;
-use Magento\Store\Model\App\Emulation;
+use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Translate\Inline\StateInterface;
@@ -68,7 +68,7 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
      * @param StateInterface $inlineTranslation
      * @param Renderer $addressRenderer
      * @param StoreManagerInterface $storeManager
-     * @param Emulation $localeResolver
+     * @param ResolverInterface $localeResolver
      * @param Data $helper
      * @param array $data
      *
@@ -86,7 +86,7 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
         StateInterface $inlineTranslation,
         Renderer $addressRenderer,
         StoreManagerInterface $storeManager,
-        Emulation $localeResolver,
+        ResolverInterface $localeResolver,
         Data $helper,
         array $data = []
     ) {
