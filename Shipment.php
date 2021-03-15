@@ -23,16 +23,16 @@ namespace Mageplaza\ExtraFee\Model\Sales\Order\Pdf;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Filesystem;
-use Magento\Store\Model\App\Emulation;
+use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Framework\Stdlib\StringUtils;
 use Magento\Framework\Translate\Inline\StateInterface;
 use Magento\Payment\Helper\Data as PaymentData;
 use Magento\Sales\Model\Order\Address\Renderer;
-use Magento\Sales\Model\Order\Invoice\Item;
 use Magento\Sales\Model\Order\Pdf\Config;
 use Magento\Sales\Model\Order\Pdf\ItemsFactory;
 use Magento\Sales\Model\Order\Pdf\Total;
+use Magento\Sales\Model\Order\Shipment\Item;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Mageplaza\ExtraFee\Helper\Data;
@@ -44,10 +44,10 @@ use Zend_Pdf_Page;
 use Zend_Pdf_Style;
 
 /**
- * Class Invoice
+ * Class Shipment
  * @package Mageplaza\ExtraFee\Model\Sales\Order\Pdf
  */
-class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
+class Shipment extends \Magento\Sales\Model\Order\Pdf\Shipment
 {
     /**
      * @var Data
@@ -55,7 +55,7 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
     protected $helper;
 
     /**
-     * Invoice constructor.
+     * Shipment constructor.
      *
      * @param PaymentData $paymentData
      * @param StringUtils $string
@@ -68,11 +68,9 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
      * @param StateInterface $inlineTranslation
      * @param Renderer $addressRenderer
      * @param StoreManagerInterface $storeManager
-     * @param Emulation $localeResolver
+     * @param ResolverInterface $localeResolver
      * @param Data $helper
      * @param array $data
-     *
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         PaymentData $paymentData,
@@ -86,12 +84,10 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
         StateInterface $inlineTranslation,
         Renderer $addressRenderer,
         StoreManagerInterface $storeManager,
-        Emulation $localeResolver,
+        ResolverInterface $localeResolver,
         Data $helper,
         array $data = []
     ) {
-        $this->helper = $helper;
-
         parent::__construct(
             $paymentData,
             $string,
@@ -107,59 +103,58 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
             $localeResolver,
             $data
         );
+
+        $this->helper = $helper;
     }
 
     /**
-     * @param array $invoices
+     * @param array $shipments
      *
      * @return Zend_Pdf
      * @throws Zend_Pdf_Exception
      */
-    public function getPdf($invoices = [])
+    public function getPdf($shipments = [])
     {
         $this->_beforeGetPdf();
-        $this->_initRenderer('invoice');
+        $this->_initRenderer('shipment');
 
         $pdf = new Zend_Pdf();
         $this->_setPdf($pdf);
-
         $style = new Zend_Pdf_Style();
         $this->_setFontBold($style, 10);
-
-        foreach ($invoices as $invoice) {
-            /** @var \Magento\Sales\Model\Order\Invoice $invoice */
-            if ($invoice->getStoreId()) {
-                $this->_localeResolver->emulate($invoice->getStoreId());
-                $this->_storeManager->setCurrentStore($invoice->getStoreId());
+        foreach ($shipments as $shipment) {
+            /** @var \Magento\Sales\Model\Order\Shipment $shipment */
+            if ($shipment->getStoreId()) {
+                $this->_localeResolver->emulate($shipment->getStoreId());
+                $this->_storeManager->setCurrentStore($shipment->getStoreId());
             }
             $page = $this->newPage();
-            $order = $invoice->getOrder();
+            $order = $shipment->getOrder();
             /* Add image */
-            $this->insertLogo($page, $invoice->getStore());
+            $this->insertLogo($page, $shipment->getStore());
             /* Add address */
-            $this->insertAddress($page, $invoice->getStore());
+            $this->insertAddress($page, $shipment->getStore());
             /* Add head */
             $this->insertOrder(
                 $page,
-                $order,
+                $shipment,
                 $this->_scopeConfig->isSetFlag(
-                    self::XML_PATH_SALES_PDF_INVOICE_PUT_ORDER_ID,
+                    self::XML_PATH_SALES_PDF_SHIPMENT_PUT_ORDER_ID,
                     ScopeInterface::SCOPE_STORE,
                     $order->getStoreId()
                 )
             );
-            /* Add document text and number */
-            $this->insertDocumentNumber($page, __('Invoice # ') . $invoice->getIncrementId());
 
-            /* Add custom field*/
             if ($this->helper->isEnabled()) {
-                $this->insertMpExtraFee($page, $order, $invoice);
+                $this->insertMpExtraFee($page, $order);
             }
 
+            /* Add document text and number */
+            $this->insertDocumentNumber($page, __('Packing Slip # ') . $shipment->getIncrementId());
             /* Add table */
             $this->_drawHeader($page);
             /* Add body */
-            foreach ($invoice->getAllItems() as $item) {
+            foreach ($shipment->getAllItems() as $item) {
                 /** @var Item $item */
                 if ($item->getOrderItem()->getParentItem()) {
                     continue;
@@ -168,13 +163,11 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
                 $this->_drawItem($item, $page, $order);
                 $page = end($pdf->pages);
             }
-            /* Add totals */
-            $this->insertTotals($page, $invoice);
-            if ($invoice->getStoreId()) {
-                $this->_localeResolver->revert();
-            }
         }
         $this->_afterGetPdf();
+        if ($shipment->getStoreId()) {
+            $this->_localeResolver->revert();
+        }
 
         return $pdf;
     }
@@ -182,15 +175,13 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
     /**
      * @param Zend_Pdf_Page $page
      * @param $order
-     * @param \Magento\Sales\Model\Order\Invoice $invoice
      *
      * @throws Zend_Pdf_Exception
      */
-    public function insertMpExtraFee(&$page, $order, $invoice)
+    public function insertMpExtraFee(&$page, $order)
     {
         $extraFeeTotal = $this->helper->getExtraFeeTotals($order);
-
-        if (!count($extraFeeTotal) || $this->helper->isInvoiced($order) !== $invoice->getId()) {
+        if (!count($extraFeeTotal)) {
             return;
         }
 

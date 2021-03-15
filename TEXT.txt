@@ -1,11 +1,9 @@
-Index: vendor/mageplaza/module-extra-fee/Model/Sales/Order/Pdf/Creditmemo.php
-IDEA additional info:
-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
-<+>UTF-8
-===================================================================
---- a/vendor/mageplaza/module-extra-fee/Model/Sales/Order/Pdf/Creditmemo.php	
-+++ b/vendor/mageplaza/module-extra-fee/Model/Sales/Order/Pdf/Creditmemo.php	
+diff --git a/Invoice.php b/Invoice.php
+index 180817d..2faa13e 100755
+--- a/Invoice.php
++++ b/Invoice.php
 @@ -23,7 +23,7 @@ namespace Mageplaza\ExtraFee\Model\Sales\Order\Pdf;
+ 
  use Magento\Framework\App\Config\ScopeConfigInterface;
  use Magento\Framework\Filesystem;
 -use Magento\Framework\Locale\ResolverInterface;
@@ -13,7 +11,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
  use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
  use Magento\Framework\Stdlib\StringUtils;
  use Magento\Framework\Translate\Inline\StateInterface;
-@@ -72,7 +72,7 @@ class Creditmemo extends \Magento\Sales\Model\Order\Pdf\Creditmemo
+@@ -68,7 +68,7 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
       * @param StateInterface $inlineTranslation
       * @param Renderer $addressRenderer
       * @param StoreManagerInterface $storeManager
@@ -21,8 +19,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +     * @param Emulation $localeResolver
       * @param Data $helper
       * @param array $data
-      */
-@@ -88,7 +88,7 @@ class Creditmemo extends \Magento\Sales\Model\Order\Pdf\Creditmemo
+      *
+@@ -86,7 +86,7 @@ class Invoice extends \Magento\Sales\Model\Order\Pdf\Invoice
          StateInterface $inlineTranslation,
          Renderer $addressRenderer,
          StoreManagerInterface $storeManager,
@@ -31,4 +29,3 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
          Data $helper,
          array $data = []
      ) {
-===================================================================
